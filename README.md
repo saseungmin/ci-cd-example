@@ -39,7 +39,7 @@ Hello world!
 > docker stop <CONTAINER ID>
 ```
 
-## 📚 Github Action CI/CD
+## 📚 Github Action Docker build
 - Github의 Action탭에서 Node.js 선택
 - `.github/workflows/ci.yml`
 
@@ -67,7 +67,6 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
     - name: Docker build
       run: |
         docker build -t cicd-example .
@@ -159,3 +158,55 @@ sudo docker ps
 
 ![6](images/6.png)
 
+- 롤백을 하고싶을 땐 해당 커밋의 ID로 이동하면 된다.
+
+## 📚 Github Actions Deploy
+- 이제 위와 같이 서버에 최신 작업을 반영해야 하기 위해서 실행하는 작업을 자동화해야 한다.
+
+```bash
+docker pull seung02169/cicd-example:${hash}
+docker stop server
+docker tag seung02169/cicd-example:${hash} cicd-example
+docker run --rm -d -p 80:3000 --name server cicd-example
+```
+
+- Github Actions에서도 접속한 다음 위 명령어를 실행시켜주면 자동화할 수 있다.
+- [ssh-remote-commands](https://github.com/marketplace/actions/ssh-remote-commands)
+
+```yml
+# 생략..
+    - name: Docker build
+      run: |
+        docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
+        docker build -t cicd-example .
+        docker tag cicd-example seung02169/cicd-example:${GITHUB_SHA::7}
+        docker push seung02169/cicd-example:${GITHUB_SHA::7}
+    - name: Deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ec2-54-180-201-173.ap-northeast-2.compute.amazonaws.com
+        username: ec2-user
+        key: ${{ secrets.PRIVATE_KEY }} # 새로 만들어줘야함
+        envs: GITHUB_SHA
+        script: |
+          docker pull seung02169/cicd-example:${GITHUB_SHA::7}
+          docker stop server
+          docker tag seung02169/cicd-example:${GITHUB_SHA::7} cicd-example
+          docker run --rm -d -p 80:3000 --name server cicd-example
+```
+
+- `secrets.PRIVATE_KEY`를 생성하기 위해서 [링크](https://github.com/appleboy/ssh-action#setting-up-a-ssh-key)의 설명에 따라 생성해준다.
+
+```bash
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+```
+
+- 생성하면 private key와 public key가 생성되는데 이중 public key를 EC2안에 등록해준다.
+- EC2에서 해당 위치의 파일을 연다.
+
+```bash
+vim ~/.ssh/authorized_keys
+```
+
+- 생성한 public key를 해당 위치에 붙여넣어준뒤 저장해준다.
+- 이렇게 한 뒤 Github Secrets에 `PRIVATE_KEY`로 private key를 등록해주면 접속이 가능해진다.
