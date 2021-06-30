@@ -26,3 +26,37 @@
 > curl localhost:3000/hello
 Hello world!
 ```
+
+### 🎈 Github Action Node.js
+- Github의 Action탭에서 Node.js 선택
+- `.github/workflows/ci.yml`
+
+```yml
+name: Node.js CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-20.04 # latest가 문제가 생길 수 있다.
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - name: Docker build
+      run: |
+        docker build -t cicd-example .
+```
