@@ -27,6 +27,18 @@
 Hello world!
 ```
 
+- 실행중인 docker 보기
+
+```bash
+> docker ps
+```
+
+- 실행중인 docker 중지하기
+
+```bash
+> docker stop <CONTAINER ID>
+```
+
 ## 📚 Github Action CI/CD
 - Github의 Action탭에서 Node.js 선택
 - `.github/workflows/ci.yml`
@@ -83,3 +95,67 @@ jobs:
 ```
 
 - 해당 Github Repository의 Settings의 Secret에 Docker 아이디 비번을 넣어준다.
+- Docker의 TAG값은 Git의 Commit id
+- Docker의 TAG값만 있으면 Docker가 설치되어있는 어느 환경에서든 배포할 수 있다.
+
+## 📚 AWS EC2 배포하기
+- [AWS](https://aws.amazon.com/)에 접속한 뒤 로그인 후 콘솔로 이동 후 EC2로 이동
+1. Amazon Machine Image(AMI)를 Amazon Linux 2 AMI (HVM), SSD Volume Type로 선택
+
+![1](images/1.png)
+
+2. 인스턴스 유형 선택: 기본 선택
+3. 인스턴스 세부 정보 구성: 기본 선택
+4. 스토리지 추가: 기본 선택
+5. 태그 추가
+
+![2](images/2.png)
+
+6. 보안 그룹 구성
+
+![3](images/3.png)
+
+7. 인스턴스 시작 검토 
+  - 시작하기 버튼 클릭 후 키 선택
+
+![4](images/4.png)
+
+8. 해당 인스턴스 선택 후 연결
+  - 인스턴스 연결에서 SSH 클라이언트 탭에서 설명에 따라 SSH연결
+
+9. EC2로 접속 완료
+
+![5](images/5.png)
+
+10. EC2 커맨드 창에 다음 명령어 입력하여 Docker 설치
+
+```bash
+sudo yum update -y
+sudo yum install -y docker
+sudo service docker start
+sudo systemctl enable docker
+sudo usermod -a -G docker ec2-user
+```
+
+11. docker hub에 올려두었던 docker 이미지 내려받기
+
+```bash
+sudo docker pull seung02169/cicd-example:<태그>
+```
+
+12. EC2에서 docker run
+
+```bash
+sudo docker run -d -p 80:3000 seung02169/cicd-example:<태그>
+```
+- 실행중인지 확인
+
+```bash
+sudo docker ps
+```
+
+13. 해당 퍼블릭 주소로 접속해 확인
+- EC2 콘솔에 해당 인스턴스를 클릭하면 요약에 퍼블릭 IPv4 주소 확인
+
+![6](images/6.png)
+
