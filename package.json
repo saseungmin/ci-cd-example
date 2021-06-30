@@ -1,0 +1,30 @@
+{
+  "name": "ci-cd-example",
+  "version": "1.0.0",
+  "description": "Github Action CI/CD example",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saseungmin/ci-cd-example.git"
+  },
+  "keywords": [],
+  "author": "Seungmin Sa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/saseungmin/ci-cd-example/issues"
+  },
+  "homepage": "https://github.com/saseungmin/ci-cd-example#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.29.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4"
+  }
+}
