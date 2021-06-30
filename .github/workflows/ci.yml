@@ -35,7 +35,7 @@ jobs:
         key: ${{ secrets.PRIVATE_KEY }} 
         envs: GITHUB_SHA
         script: |
-          docker pull seung02169/cicd-example:${GITHUB_SHA::7}
-          docker stop server
-          docker tag seung02169/cicd-example:${GITHUB_SHA::7} cicd-example
-          docker run --rm -d -p 80:3000 --name server cicd-example
+          sudo docker pull seung02169/cicd-example:${GITHUB_SHA::7}
+          sudo docker stop server
+          sudo docker tag seung02169/cicd-example:${GITHUB_SHA::7} cicd-example
+          sudo docker run --rm -d -p 80:3000 --name server cicd-example
