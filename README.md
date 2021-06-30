@@ -27,7 +27,7 @@
 Hello world!
 ```
 
-### 🎈 Github Action Node.js
+## 📚 Github Action CI/CD
 - Github의 Action탭에서 Node.js 선택
 - `.github/workflows/ci.yml`
 
@@ -60,3 +60,26 @@ jobs:
       run: |
         docker build -t cicd-example .
 ```
+
+- 도커 이미지를 빌드까지 한 상태
+- 이제 실제로 서버에서 실행시키려면 이 코드를 받아올 수 있어야 한다. 그것을 [도커 허브](https://hub.docker.com/)에 올린다.
+- [Docker hub](https://hub.docker.com/)에 새로운 Repository를 만든다.
+
+```bash
+> docker tag cicd-example seung02169/cicd-example
+> docker push seung02169/cicd-example
+```
+
+- `.github/workflows/ci.yml`의 Docker build 부분을 다음과 같이 추가
+
+```yml
+# 생략...
+    - name: Docker build
+      run: |
+        docker login -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
+        docker build -t cicd-example .
+        docker tag cicd-example seung02169/cicd-example:${GITHUB_SHA::7}
+        docker push seung02169/cicd-example:${GITHUB_SHA::7}
+```
+
+- 해당 Github Repository의 Settings의 Secret에 Docker 아이디 비번을 넣어준다.
