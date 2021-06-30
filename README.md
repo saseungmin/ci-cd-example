@@ -1,5 +1,6 @@
 # 👉 CI/CD Example
 - Github Action CI/CD example
+- [CodeSoom CI/CD Repo](https://github.com/CodeSoom/cicd-example)
 
 ## 📚 Settings
 - npm install dependencies
@@ -189,10 +190,10 @@ docker run --rm -d -p 80:3000 --name server cicd-example
         key: ${{ secrets.PRIVATE_KEY }} # 새로 만들어줘야함
         envs: GITHUB_SHA
         script: |
-          docker pull seung02169/cicd-example:${GITHUB_SHA::7}
-          docker stop server
-          docker tag seung02169/cicd-example:${GITHUB_SHA::7} cicd-example
-          docker run --rm -d -p 80:3000 --name server cicd-example
+          sudo docker pull seung02169/cicd-example:${GITHUB_SHA::7}
+          sudo docker stop server
+          sudo docker tag seung02169/cicd-example:${GITHUB_SHA::7} cicd-example
+          sudo docker run --rm -d -p 80:3000 --name server cicd-example
 ```
 
 - `secrets.PRIVATE_KEY`를 생성하기 위해서 [링크](https://github.com/appleboy/ssh-action#setting-up-a-ssh-key)의 설명에 따라 생성해준다.
@@ -210,3 +211,8 @@ vim ~/.ssh/authorized_keys
 
 - 생성한 public key를 해당 위치에 붙여넣어준뒤 저장해준다.
 - 이렇게 한 뒤 Github Secrets에 `PRIVATE_KEY`로 private key를 등록해주면 접속이 가능해진다.
+- 자동으로 변경된 코드가 배포되어 있는 것을 확인할 수 있다.
+
+![7](images/7.png)
+
+- 여기까지가 **동작하는 골격**에 포함되는 것이다.
